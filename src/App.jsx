@@ -6,7 +6,7 @@ function App() {
 
   return (
     <>
-      <Button variant="contained">Co Authored</Button>
+      <Button variant="contained">Nothing changed</Button>
     </>
   )
 }
