@@ -6,7 +6,7 @@ function App() {
 
   return (
     <>
-      <Button variant="contained">Hello World!!</Button>
+      <Button variant="contained">Co Authored</Button>
     </>
   )
 }
