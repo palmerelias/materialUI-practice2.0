@@ -1,36 +1,57 @@
-import React from "react";
-import Nav from "./Nav";
-import { Box, Button } from "@mui/material";
-import Altitude from "./images/altitude.jpg";
+import React, { useState, useEffect } from "react";
+import { DataGrid } from "@mui/x-data-grid";
 import exifr from "exifr";
+import Altitude1 from "./images/altitude 1.jpg";
 
-const parsedImage = async () => {
-  const data = await exifr.parse(Altitude, true);
-  const dataArray = [];
-  Object.entries(data).map(([key, value]) => dataArray.push({ [key]: value }));
-  console.log(dataArray);
-};
+function ImageDataTable() {
+  const [rows, setRows] = useState([]);
+  const [columns, setColumns] = useState([
+    { field: "id", headerName: "ID", width: 200 },
+    { field: "imageUrl", headerName: "Image", width: 200 },
+    // Add a default column for the image URL
+  ]);
 
-export default function App() {
+  useEffect(() => {
+    // Fetch your image data here and set it to the rows state
+    async function fetchImageData() {
+      try {
+        const exifData = await exifr.parse(Altitude1);
+
+        // Dynamically generate columns based on the keys in the EXIF data
+        const updatedColumns = [
+          { field: "id", headerName: "ID", width: 200 },
+          { field: "imageUrl", headerName: "Image", width: 200 },
+          ...Object.keys(exifData).map((key) => ({
+            field: key,
+            headerName: key,
+            width: 200,
+          })),
+        ];
+
+        setColumns(updatedColumns);
+
+        const imageData = [
+          {
+            id: 1,
+            imageUrl: Altitude,
+            ...exifData,
+          },
+        ];
+
+        setRows(imageData);
+      } catch (error) {
+        console.error("Error fetching image data:", error);
+      }
+    }
+
+    fetchImageData();
+  }, []);
+
   return (
-    <Box>
-      <Nav />
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          m: 1,
-          alignItems: "",
-        }}
-      >
-        <img style={{ width: 250 }} src={Altitude}></img>
-        <Box sx={{ m: 2, display: "flex", justifyContent: "center" }}>
-          <Button variant="contained" onClick={parsedImage}>
-            Console
-          </Button>
-        </Box>
-      </Box>
-      <Box>{/* parsedImage data can go here */}</Box>
-    </Box>
+    <div style={{ height: 400, width: "100%" }}>
+      <DataGrid rows={rows} columns={columns} pageSize={5} checkboxSelection />
+    </div>
   );
 }
+
+export default ImageDataTable;
